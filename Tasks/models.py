@@ -1,12 +1,13 @@
 from django.db import models
 from django.conf import settings
+from Projects.models import ProjectModel
 # Create your models here.
 
 class TaskModel(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     project = models.ForeignKey(
-        ' Projects.ProjectModel',
+        'Projects.ProjectModel',
         on_delete=models.CASCADE,
         related_name='tasks'
     )
