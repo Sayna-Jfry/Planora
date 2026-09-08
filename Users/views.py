@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from rest_framework import status
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import UserModel
-from .serializers import RegisterUserSerializer
+from .serializers import RegisterUserSerializer, ProfileUserSerializer
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -79,3 +79,57 @@ class LogOutApiView(APIView):
 #
 #         except Exception:
 #             return Response({'message' : 'Failed to log in'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# user profile with Generic View
+class UserInfoView(RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ProfileUserSerializer
+
+    def get_object(self):
+        return self.request.user
+
+
+
+# user profile with APIView
+# class UserInfoView(APIView):
+#     permission_classes = [IsAuthenticated]
+#
+#     def get(self, request):
+#         user = request.user
+#         return Response({
+#             'username': user.username,
+#             'email': user.email,
+#
+#         }, status=status.HTTP_200_OK)
+#
+#     def patch(self, request):
+#         user = request.user
+#         serializer = ProfileUserSerializer(user, data=request.data, partial = True)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# delete account with Generic View
+# class DeleteAccountAPIView(DestroyAPIView):
+#     permission_classes = [IsAuthenticated]
+#
+#
+#     def get_object(self):
+#         return self.request.user
+#
+#     def destroy(self, request, *args, **kwargs):
+#         user = self.get_object()
+#         user.delete()
+#         return Response({'message' : 'Successfully deleted account'}, status=status.HTTP_202_ACCEPTED)
+
+
+# delete account with APIView
+class DeleteAccountAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def delete(self, request):
+        user = request.user
+        user.delete()
+
+        return Response({'message': 'Successfully deleted account'}, status=status.HTTP_202_ACCEPTED)
