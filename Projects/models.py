@@ -21,6 +21,7 @@ class ProjectModel(models.Model):
     )
     members = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
+        blank=True,
         related_name='projects'
     )
 
